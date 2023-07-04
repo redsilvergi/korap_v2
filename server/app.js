@@ -35,7 +35,7 @@ app.get(
       req.params.onewayOps === "null" ? null : req.params.onewayOps.split(",");
 
     fs.readFile(
-      `${__dirname}/datafolder/National_Road_100.geojson`,
+      `${__dirname}/datafolder/roady.geojson`,
       "utf8",
       (err, data) => {
         if (err) {
