@@ -4,9 +4,43 @@ const app = express();
 const cors = require("cors");
 const turf = require("@turf/turf");
 const path = require("path");
+const { Client } = require("pg");
+// const gdal = requrie("gdal-async");
 
 app.use(cors());
 app.use(express.json());
+
+app.get("/geojson", async (req, res) => {
+  const client = new Client({
+    host: "database-1-instance-1.csegwn1kwqex.ap-northeast-1.rds.amazonaws.com",
+    user: "silverland",
+    password: "aladusrnth2016-",
+    database: "roady",
+  });
+
+  await client.connect();
+
+  const result = await client.query(
+    "SELECT ST_AsGeoJSON(wkb_geometry) as geom, * FROM roady5 "
+  );
+  await client.end();
+
+  const geojson = {
+    type: "FeatureCollection",
+    features: result.rows.map((row) => {
+      const { geom, wkb_geometry, sig_kor_nm, ogc_fid, ...properties } = row;
+      return {
+        type: "Feature",
+        geometry: JSON.parse(geom),
+        properties: properties,
+      };
+    }),
+  };
+
+  res.setHeader("Content-Type", "application/json");
+  // res.send(geojson);
+  res.json(geojson);
+});
 
 app.get(
   "/conditions/:roadNo/:laneOps/:facilOps/:speedOps/:barrierOps/:lightOps/:caronlyOps/:onewayOps",

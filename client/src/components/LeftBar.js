@@ -39,11 +39,21 @@ const LeftBar = ({ setData1, setLength, setLD, setIsFilter }) => {
       }));
   }, [isSelect, setInfo]);
 
+  const handleGeoJsonTest = async () => {
+    setLD(true);
+    const response = await axios.get(`http://localhost:4000/geojson`);
+    console.log("GEOJSONTESTRESULT:", response.data);
+    setData1(response.data);
+    setLD(false);
+    setIsFilter(true);
+  };
+
   const handleCondition = async () => {
     setLD(true);
     const response = await axios.get(
-      `/conditions/${info.roadNo.selected}/${info.laneOps.checkboxes}/${info.facilOps.checkboxes}/${info.speedOps.checkboxes}/${info.barrierOps.checkboxes}/${info.lightOps.checkboxes}/${info.caronlyOps.checkboxes}/${info.onewayOps.checkboxes}`
+      `http://localhost:4000/conditions/${info.roadNo.selected}/${info.laneOps.checkboxes}/${info.facilOps.checkboxes}/${info.speedOps.checkboxes}/${info.barrierOps.checkboxes}/${info.lightOps.checkboxes}/${info.caronlyOps.checkboxes}/${info.onewayOps.checkboxes}`
     );
+    console.log(response.data.mergedGJ);
     setData1(response.data.mergedGJ);
     setLD(false);
     setIsFilter(true);
@@ -260,6 +270,7 @@ const LeftBar = ({ setData1, setLength, setLD, setIsFilter }) => {
         <a href="./">
           <p>일반국도현황</p>
         </a>
+        <button onClick={handleGeoJsonTest}>call from database</button>
       </div>
       <div className="detail_div">
         <div className="accordion_div">
